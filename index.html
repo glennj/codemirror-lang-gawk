@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GNU AWK CodeMirror 6 Plugin Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./demo/style.css" />
+  </head>
+  <body class="dark-theme">
+    <div id="app">
+      <!-- Navbar / Header -->
+      <header class="navbar">
+        <div class="brand">
+          <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <line x1="10" y1="9" x2="8" y2="9"></line>
+            </svg>
+          </div>
+          <div>
+            <h1>CodeMirror 6 GNU AWK Extension</h1>
+            <p class="subtitle">Complete Language Support for GNU AWK (gawk)</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-group">
+            <label for="sample-select">Load Preset:</label>
+            <select id="sample-select" class="select-input">
+              <option value="logParser">Web Log Analytics (gawk Extensions)</option>
+              <option value="namespaces">CSV to JSON with @namespace & @include</option>
+              <option value="timeBitwise">Time & Bitwise Functions (gawk Math)</option>
+              <option value="diagnostics">Linter Syntax Error Diagnostics</option>
+            </select>
+          </div>
+
+          <button id="theme-toggle" class="btn btn-secondary">
+            <span class="theme-icon">☀️</span> Light Mode
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Workspace Split Pane -->
+      <main class="workspace">
+        <!-- Left Panel: CodeMirror 6 Editor -->
+        <section class="panel editor-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="status-indicator"></span>
+              <span>GAWK Editor (CodeMirror 6)</span>
+            </div>
+            <div class="quick-snippets">
+              <span class="snippets-label">Insert Snippet:</span>
+              <button class="chip" data-snippet="@include &quot;helpers.awk&quot;">@include</button>
+              <button class="chip" data-snippet="@namespace &quot;analytics&quot;">@namespace</button>
+              <button class="chip" data-snippet="BEGIN {&#10;&#9;&#10;}">BEGIN</button>
+              <button class="chip" data-snippet="gensub(/([0-9]+)/, &quot;[\\1]&quot;, &quot;g&quot;, $0)">gensub()</button>
+              <button class="chip" data-snippet="patsplit($0, arr, /[a-zA-Z0-9_]+/)">patsplit()</button>
+            </div>
+          </div>
+          <div id="editor-container"></div>
+        </section>
+
+        <!-- Right Panel: AST/Token Inspector & Evaluation Output -->
+        <section class="panel inspector-panel">
+          <div class="panel-header">
+            <div class="tab-buttons">
+              <button class="tab-btn active" data-tab="tokens-tab">Token Stream</button>
+              <button class="tab-btn" data-tab="output-tab">Simulator Output</button>
+              <button class="tab-btn" data-tab="cheatsheet-tab">GAWK Cheat Sheet</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- Tab 1: Token Stream Inspector -->
+            <div id="tokens-tab" class="tab-content active">
+              <div class="inspector-summary">
+                <span>Real-time Lexical Token Inspection:</span>
+                <span id="token-count" class="badge">0 tokens</span>
+              </div>
+              <div id="tokens-container" class="tokens-grid"></div>
+            </div>
+
+            <!-- Tab 2: Simulator Output -->
+            <div id="output-tab" class="tab-content">
+              <div class="simulator-controls">
+                <button id="run-sim-btn" class="btn btn-primary">▶ Run Simulated AWK Script</button>
+              </div>
+              <div class="console-box">
+                <div class="console-header">Mock Input Stream: access.log / data.csv</div>
+                <pre id="sim-input" class="console-code">192.168.1.10 - - [08/Aug/2026:14:32:10 +0000] "GET /api/v1/data HTTP/1.1" 200 4523
+10.0.0.45 - - [08/Aug/2026:14:32:12 +0000] "POST /api/v1/login HTTP/1.1" 401 128
+192.168.1.10 - - [08/Aug/2026:14:32:15 +0000] "GET /favicon.ico HTTP/1.1" 404 230</pre>
+                <div class="console-header">Script Output / stdout:</div>
+                <pre id="sim-output" class="console-code output-success">Click "Run Simulated AWK Script" to evaluate current script against mock data.</pre>
+              </div>
+            </div>
+
+            <!-- Tab 3: Cheat Sheet -->
+            <div id="cheatsheet-tab" class="tab-content">
+              <div class="cheatsheet">
+                <h3>GNU AWK Features Supported</h3>
+                
+                <h4>Directives</h4>
+                <ul>
+                  <li><code>@include "file.awk"</code> - Includes external file</li>
+                  <li><code>@load "ext"</code> - Loads dynamic C extension</li>
+                  <li><code>@namespace "name"</code> - Sets identifier namespace</li>
+                </ul>
+
+                <h4>Special Variables</h4>
+                <ul>
+                  <li><code>ARGIND</code> - Index in ARGV of current file</li>
+                  <li><code>ERRNO</code> - System error string for failed I/O</li>
+                  <li><code>FPAT</code> - Regex describing field contents</li>
+                  <li><code>FIELDWIDTHS</code> - Space separated field column widths</li>
+                  <li><code>FUNCTAB</code> / <code>SYMTAB</code> - Array of defined functions/variables</li>
+                </ul>
+
+                <h4>Built-in Functions</h4>
+                <ul>
+                  <li><code>gensub(r, s, h [, t])</code> - Powerful substitution</li>
+                  <li><code>patsplit(s, a [, r])</code> - Split by regex matching</li>
+                  <li><code>asort(src [, dest])</code> - Sort array by value</li>
+                  <li><code>asorti(src [, dest])</code> - Sort array by index</li>
+                  <li><code>strftime(fmt, ts)</code> - Format timestamp</li>
+                  <li><code>typeof(x)</code> / <code>isarray(x)</code> - Dynamic type inspection</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>Built with CodeMirror 6 & TypeScript • GNU AWK Plugin Version 1.0.0</p>
+      </footer>
+    </div>
+
+    <script type="module" src="./demo/main.ts"></script>
+  </body>
+</html>
